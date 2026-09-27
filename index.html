@@ -129,7 +129,23 @@ function showTiePair(ranked,tiedIds){
     ranked.sort((a,b)=>(wins.get(b.id)+bonus.get(b.id)*0.001)-(wins.get(a.id)+bonus.get(a.id)*0.001));
     showResult(ranked);return;
   }
-  const [a,b]=tieQueue[tieIndex];$("cards").innerHTML="";selected=[];$("next").disabled=true;
+  function showTiePair(ranked,tiedIds){
+    if(tieIndex>=tieQueue.length){
+      const bonus=new Map(tieResults.map(x=>[x.p.id,x.w]));
+      ranked.sort((a,b)=>
+        (wins.get(b.id)+bonus.get(b.id)*0.001)-
+        (wins.get(a.id)+bonus.get(a.id)*0.001)
+      );
+      showResult(ranked);
+      return;
+  }
+
+  $("status").textContent=`同勝場追加比較 ｜ ${tieIndex+1} / ${tieQueue.length} ｜ 2選1`;
+
+  const [a,b]=tieQueue[tieIndex];
+  $("cards").innerHTML="";
+  selected=[];
+  $("next").disabled=true;
   [a,b].forEach(p=>{
     const c=document.createElement("div");c.className="card";
     c.innerHTML=`<div class="photo">照片</div><div class="name">${p.name}</div><div class="group">${p.group}</div>`;
