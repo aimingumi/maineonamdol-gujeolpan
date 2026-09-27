@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>망돌 구절판</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#faf7f5;color:#333;font-family:Arial,"Noto Sans KR",sans-serif}
+header{text-align:center;padding:24px 12px 10px}
+h1{margin:0;font-size:32px;letter-spacing:2px}.sub{color:#999;margin-top:6px}
+#app{max-width:900px;margin:auto;padding:12px}
+.status{text-align:center;margin:8px 0 16px;color:#666}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:760px;margin:auto}
+.card{background:#fff;border:2px solid transparent;border-radius:13px;padding:8px;text-align:center;cursor:pointer;box-shadow:0 3px 10px #0001}
+.card.selected{border-color:#e58aa6;background:#fff0f4}
+.photo{width:100%;aspect-ratio:1;border-radius:9px;background:#eee;display:flex;align-items:center;justify-content:center;color:#aaa;overflow:hidden;font-size:12px}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.name{font-size:16px;font-weight:700;margin-top:7px}.group{font-size:12px;color:#999;margin-top:2px}
+button{display:block;margin:22px auto;padding:11px 45px;border:0;border-radius:24px;background:#333;color:#fff;font-size:16px}
+button:disabled{background:#ccc}.restart{background:#e58aa6}
+#result{display:none;text-align:center}
+.grid{max-width:680px;margin:20px auto;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.rank{background:#fff;border-radius:14px;padding:8px;min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 10px #0001}
+.rank-1{min-height:180px;border:3px solid #dfb74e}
+.rank-number{font-size:12px;color:#aaa}.rank-name{font-size:18px;font-weight:700}.rank-group{font-size:12px;color:#999}
+.rank .photo{width:78%;margin:6px 0}
+@media(max-width:600px){h1{font-size:27px}.cards{gap:6px}.card{padding:5px;border-radius:10px}.name{font-size:12px}.group{font-size:9px}.grid{gap:6px}.rank{min-height:120px;padding:5px}.rank-1{min-height:150px}.rank-name{font-size:14px}}
+</style>
+</head>
+<body>
+<header><h1>망돌 구절판</h1><div class="sub">나의 망돌 TOP 9을 찾아보세요</div></header>
+<div id="app">
+<section id="game"><div id="status" class="status"></div><div id="cards" class="cards"></div><button id="next" disabled>下一頁</button></section>
+<section id="result"><h2>MY TOP 9</h2><p>나의 망돌 구절판</p><div id="resultGrid" class="grid"></div><button class="restart" onclick="location.reload()">再玩一次</button></section>
+</div>
+<script>
+const raw=[["하빛", "TRENDZ"], ["리온", "TRENDZ"], ["윤우", "TRENDZ"], ["조한국", "TRENDZ"], ["라엘", "TRENDZ"], ["은일", "TRENDZ"], ["정예찬", "TRENDZ"], ["이승현", "AIMERS"], ["최은준", "AIMERS"], ["김도륜", "AIMERS"], ["김요엘", "AIMERS"], ["박승환", "AIMERS"], ["황우영", "AIMERS"], ["김희수", "The Wind"], ["타나톤", "The Wind"], ["최한빈", "The Wind"], ["박하유찬", "The Wind"], ["안찬원", "The Wind"], ["장현준", "The Wind"], ["카즈타", "n.SSign"], ["도하", "n.SSign"], ["성윤", "n.SSign"], ["로빈", "n.SSign"], ["한준", "n.SSign"], ["로렌스", "n.SSign"], ["희원", "n.SSign"], ["동재", "EASTSHINE"], ["IEL", "EASTSHINE"], ["현", "EASTSHINE"], ["루민", "EASTSHINE"], ["피닉스", "EASTSHINE"], ["고현", "WAKER"], ["권협", "WAKER"], ["이준", "WAKER"], ["리오", "WAKER"], ["새별", "WAKER"], ["세범", "WAKER"], ["세이타", "DXMON"], ["민재", "DXMON"], ["HEE", "DXMON"], ["태극", "DXMON"], ["REX", "DXMON"], ["이안", "NCHIVE"], ["하엘", "NCHIVE"], ["강산", "NCHIVE"], ["유찬", "NCHIVE"], ["주영", "NCHIVE"], ["엔", "NCHIVE"], ["왕석", "SW:C"], ["휘", "SW:C"], ["진", "SW:C"], ["타이키", "SW:C"], ["사토시", "SW:C"], ["건", "SW:C"], ["리쿠토", "SW:C"], ["구현", "BE BOYS"], ["민준", "BE BOYS"], ["윤서", "BE BOYS"], ["학성", "BE BOYS"], ["타쿠마", "BE BOYS"], ["원천", "BE BOYS"], ["채민", "N.TOP"], ["민서", "N.TOP"], ["희우", "N.TOP"], ["현웅", "N.TOP"], ["강현", "N.TOP"], ["창림", "N.TOP"], ["타쿠토", "N.TOP"], ["강빈", "CHSAER"], ["케이스케", "CHSAER"], ["렌", "CHSAER"], ["윤성", "CHSAER"], ["시훈", "CHSAER"], ["테츠", "AmbiO"], ["지수", "AmbiO"], ["루원", "AmbiO"], ["기원", "AmbiO"], ["승상", "AmbiO"], ["서하", "GENUS"], ["찬용", "GENUS"], ["채훈", "GENUS"], ["재영", "GENUS"], ["유안", "GENUS"], ["이진", "ASCENDER"], ["이들", "ASCENDER"], ["로안", "ASCENDER"], ["지후", "ASCENDER"], ["해솔", "ASCENDER"], ["주현", "EMOTI:M"], ["레이", "EMOTI:M"], ["영호", "EMOTI:M"], ["찬율", "EMOTI:M"], ["진원", "EMOTI:M"], ["권도은", "NBIG"], ["시안", "NBIG"], ["성준", "NBIG"], ["류민", "NBIG"], ["이하준", "NBIG"], ["승연", "NBIG"], ["밍카이", "AM8IC"], ["루", "AM8IC"], ["사호", "AM8IC"], ["청이", "AM8IC"], ["첸", "AM8IC"], ["민재", "NXON"], ["케이", "NXON"], ["담", "NXON"], ["지키", "NXON"], ["민규", "NXON"], ["조하", "NXON"], ["케이데이", "NXON"], ["겸", "NXON"], ["순찬", "ANOHRTS"], ["현제", "ANOHRTS"], ["다훈", "ANOHRTS"], ["우현", "ANOHRTS"], ["기현", "ANOHRTS"]];
+const idols=raw.map((x,i)=>({id:i,name:x[0],group:x[1]}));
+let pool=[...idols],round=1,pages=[],page=0,winners=[],selected=[];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5)}
+function unique(a){return [...new Map(a.map(x=>[x.id,x])).values()]}
+
+/* JPG / JPEG / PNG 都會自動嘗試 */
+function loadPhoto(box,name){
+  const exts=["jpg","jpeg","png"];
+  let n=0;
+  function go(){
+    if(n>=exts.length){box.textContent="照片";return}
+    const img=new Image(), ext=exts[n++];
+    img.onload=()=>{box.textContent="";box.appendChild(img)};
+    img.onerror=go;
+    img.src="photos/"+encodeURIComponent(name)+"."+ext;
+  }
+  go();
+}
+
+function buildRound(){
+  winners=[];pages=[];page=0;
+  const a=shuffle(pool);
+  if(a.length<=9){showFinal(a);return}
+
+  /* 正常階段：完整跑過每個人；每局 9 選 3 */
+  let i=0;
+  while(a.length-i>=18){
+    pages.push({list:a.slice(i,i+9),type:3});
+    i+=9;
+  }
+
+  /* 尾端用 2 選 1 收斂，下一輪仍會繼續比，不會直接變成最終排名 */
+  const tail=a.slice(i);
+  for(let j=0;j+1<tail.length;j+=2) pages.push({list:tail.slice(j,j+2),type:1});
+  if(tail.length%2) winners.push(tail[tail.length-1]);
+  showPage();
+}
+
+function showPage(){
+  if(page>=pages.length){finishRound();return}
+  selected=[];
+  const p=pages[page];
+  status.textContent=`第 ${round} 輪 ｜ ${page+1} / ${pages.length} 局 ｜ ${p.type===3?"9 選 3":"2 選 1"}`;
+  cards.innerHTML="";
+  p.list.forEach(id=>{
+    const c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`<div class="photo">照片</div><div class="name">${id.name}</div><div class="group">${id.group}</div>`;
+    loadPhoto(c.querySelector(".photo"),id.name);
+    c.onclick=()=>choose(id,c,p.type);
+    cards.appendChild(c);
+  });
+  next.disabled=true;
+}
+
+function choose(id,c,limit){
+  if(selected.includes(id)){
+    selected=selected.filter(x=>x!==id);c.classList.remove("selected");
+  }else if(selected.length<limit){
+    selected.push(id);c.classList.add("selected");
+  }
+  next.disabled=selected.length!==limit;
+}
+
+next.onclick=()=>{winners.push(...selected);page++;showPage()};
+
+function finishRound(){
+  winners=unique(winners);
+  if(winners.length<=9){
+    if(winners.length<9){
+      const extra=shuffle(pool.filter(x=>!winners.some(y=>y.id===x.id)));
+      winners=unique([...winners,...extra]).slice(0,9);
+    }
+    showFinal(winners);
+    return;
+  }
+  pool=winners;round++;buildRound();
+}
+
+function showFinal(finalists){
+  const final=finalists.slice(0,9);
+  game.style.display="none";result.style.display="block";
+  /* 4 5 6 / 2 1 3 / 7 8 9 */
+  const order=[3,4,5,1,0,2,6,7,8];
+  resultGrid.innerHTML="";
+  order.forEach(idx=>{
+    const id=final[idx],d=document.createElement("div");
+    d.className="rank "+(idx===0?"rank-1":"");
+    d.innerHTML=`<div class="rank-number">${idx+1}위</div><div class="photo">照片</div><div class="rank-name">${id.name}</div><div class="rank-group">${id.group}</div>`;
+    loadPhoto(d.querySelector(".photo"),id.name);
+    resultGrid.appendChild(d);
+  });
+}
+
+const $=id=>document.getElementById(id);
+const game=$("game"),result=$("result"),cards=$("cards"),status=$("status"),next=$("next"),resultGrid=$("resultGrid");
+buildRound();
+</script>
+</body>
+</html>
